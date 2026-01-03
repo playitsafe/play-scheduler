@@ -4,8 +4,10 @@ const { chromium } = require('playwright');
 (async () => {
   const url = process.env.URL;
   const password = process.env.PASSWORD;
+  const forceLogin = process.env.FORCE_LOGIN === 'true';
+  const headless = process.env.HEADLESS !== 'false';
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless });
   const page = await browser.newPage();
 
   await page.goto(url, { waitUntil: 'networkidle' });
@@ -14,16 +16,24 @@ const { chromium } = require('playwright');
   await page.click('#pc-login-btn');
   console.log('Login started!');
 
-
-  const result = await Promise.race([
-    page.waitForSelector('#alert-container', { timeout: 10000 }).then(() => false),
-    page.waitForSelector('li#advanced', { timeout: 10000 }).then(() => true),
+  // Wait for either alert or successful login indicator
+  const hasloginDialog = await Promise.race([
+    page.waitForSelector('#alert-container', { timeout: 10000 }).then(() => true),
+    page.waitForSelector('li#advanced', { timeout: 10000 }).then(() => false),
   ]);
 
-  if (!result) {
-    console.log('Login abort: another account is already logged in.');
-    await browser.close();
-    return;
+  if (hasloginDialog) {
+    console.log('Previous login detected.');
+
+    if (forceLogin) {
+      console.log('Force login enabled, proceeding to force login.');
+      await page.locator('#confirm-yes').click();
+      console.log('Confirmed force login.');
+    } else {
+      console.log('Force login disabled, aborting.');
+      await browser.close();
+      return;
+    }
   }
   console.log('Login successful!');
 
