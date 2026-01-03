@@ -56,9 +56,15 @@ const logger = require('./logger');
 
     await cover.waitFor({ state: 'visible', timeout: 10000 });
     await cover.click();
-    logger.info('Click network toggle.');
+    logger.info('Clicking network toggle.');
     await page.waitForLoadState('networkidle');
-    logger.info('Network has been toggled.');
+
+    const selectedBtn = page.locator('#a_mobileDataSwitch button.button-group-button.selected');
+    await selectedBtn.waitFor({ timeout: 10000 });
+
+    const currentValue = await selectedBtn.getAttribute('value');
+
+    logger.info(`Network has been toggled. Current status: ${currentValue}`);
 
     // logout
     await page.click('#topLogout');
