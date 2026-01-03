@@ -40,12 +40,7 @@ mkdir -p /tmp/zfsv3/sata11/<userame>/data/Docker/play-scheduler/logs
 
 */30 * * * * cd /tmp/zfsv3/sata11/<userame>/data/Docker/play-scheduler && /usr/bin/docker run --rm --env-file .env play-scheduler >> logs/cron.log 2>&1
 
-
+# Check logs
+tail -f /tmp/zfsv3/sata11/<username>/data/Docker/play-scheduler/logs/cron.log
 ```
 
-
-```
-*/30 * * * * cd /tmp/zfsv3/sata11/<userame>/data/Docker/play-scheduler && /usr/bin/docker run --rm --env-file .env play-scheduler >> logs/cron.log 2>&1
-
-
-```

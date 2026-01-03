@@ -76,6 +76,7 @@ const logger = require('./logger');
   } catch (error) {
     logger.error('An error occurred:', error);
   } finally {
+    logger.info('Closing browser...');
     await browser.close();
   }
 })();
